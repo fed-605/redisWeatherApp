@@ -3,18 +3,18 @@ package api
 import (
 	"net/http"
 
-	"github.com/fed-605/weatherApi/internal/cache"
+	"github.com/fed-605/weatherApi/internal/app"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
 type Application struct {
-	cache cache.Cache
+	service *app.Service
 }
 
-func NewApplication(cache cache.Cache) *Application {
+func NewApplication(service *app.Service) *Application {
 	return &Application{
-		cache: cache,
+		service: service,
 	}
 }
 

@@ -1,7 +1,8 @@
-package redis
+package redisCache
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/fed-605/weatherApi/internal/cache"
@@ -9,7 +10,7 @@ import (
 )
 
 type redisCache struct {
-	redis *redis.Client
+	client *redis.Client
 }
 
 func NewRedisCache(addr string, password string) (*redisCache, error) {
@@ -24,15 +25,33 @@ func NewRedisCache(addr string, password string) (*redisCache, error) {
 		return nil, err
 	}
 	return &redisCache{
-		redis: client,
+		client: client,
 	}, nil
 
 }
 
 func (s *redisCache) Get(ctx context.Context, key string) (*cache.WeatherResponse, error) {
-	return nil, nil
+
+	resp, err := s.client.Get(ctx, key).Result()
+	if err == redis.Nil {
+		return nil, nil
+	}
+	var wearherResp cache.WeatherResponse
+	if err := json.Unmarshal([]byte(resp), &wearherResp); err != nil {
+		return nil, err
+	}
+	return &wearherResp, nil
+
 }
 
 func (s *redisCache) Set(ctx context.Context, key string, value *cache.WeatherResponse, ttl time.Duration) error {
+	v, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+	err = s.client.Set(ctx, key, string(v), ttl).Err()
+	if err != nil {
+		return err
+	}
 	return nil
 }
