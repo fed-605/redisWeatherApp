@@ -30,3 +30,18 @@ func main() {
 	fmt.Println(*ans)
 
 }
+
+// package redisweather
+
+// func main() {
+// 	if err := env.Loadenv(); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	cache, err := redis.NewRedisCache(env.GetEnvString("REDIS_ADDR", ""), env.GetEnvString("REDIS_PASS", ""))
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	app := api.NewApplication(cache)
+// 	srv := server.NewServer(env.GetEnvString("PORT", "8999"), app.Routes())
+// 	srv.Run()
+// }
