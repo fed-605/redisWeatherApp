@@ -9,12 +9,12 @@ import (
 )
 
 type Application struct {
-	service *app.Service
+	Service *app.Service
 }
 
 func NewApplication(service *app.Service) *Application {
 	return &Application{
-		service: service,
+		Service: service,
 	}
 }
 

@@ -26,4 +26,17 @@ func errResponse(w http.ResponseWriter, message string, code int) error {
 	return nil
 }
 
+func writeJSON(w http.ResponseWriter, code int, v any) error {
+	w.WriteHeader(code)
+	b, err := json.MarshalIndent(v, "", "    ")
+	if err != nil {
+		errResponse(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	if _, err := w.Write(b); err != nil {
+		errResponse(w, err.Error(), http.StatusInternalServerError)
+	}
+	return nil
+}
+
 // could be an error
