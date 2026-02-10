@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"context"
+	"fmt"
 	"time"
 )
 
@@ -18,6 +18,10 @@ type CurrentConditions struct {
 }
 
 type Cache interface {
-	Get(ctx context.Context,key string) (*WeatherResponse,error)
-	Set(ctx context.Context,key string,value *WeatherResponse,ttl time.Duration) error
+	Get(key string) (*WeatherResponse, error)
+	Set(key string, value *WeatherResponse, ttl time.Duration) error
+}
+
+func BuildKey(version string, locaton string) string {
+	return fmt.Sprintf("weather:%s:%s", version, locaton)
 }

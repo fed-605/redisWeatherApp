@@ -10,9 +10,9 @@ import (
 /*
 Contract
 
-	pattern:/api/v1/weather?city=...
+	pattern:/weather/{location}
 	method:GET
-	info:query params
+	info:pattern
 
 suceed:
 
@@ -34,6 +34,7 @@ func (app *Application) GetWeatherByCity(w http.ResponseWriter, r *http.Request)
 	weather, err := app.Service.GetWeatherByCity(location)
 	if err != nil {
 		errResponse(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	if err := writeJSON(w, http.StatusOK, weather); err != nil {

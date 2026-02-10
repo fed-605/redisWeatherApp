@@ -9,6 +9,10 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+const (
+	redisContextTime = time.Millisecond * 75
+)
+
 type redisCache struct {
 	client *redis.Client
 }
@@ -30,11 +34,15 @@ func NewRedisCache(addr string, password string) (*redisCache, error) {
 
 }
 
-func (s *redisCache) Get(ctx context.Context, key string) (*cache.WeatherResponse, error) {
-
-	resp, err := s.client.Get(ctx, key).Result()
+func (s *redisCache) Get(key string) (*cache.WeatherResponse, error) {
+	getCtx, cancel := context.WithTimeout(context.Background(), redisContextTime)
+	defer cancel()
+	resp, err := s.client.Get(getCtx, key).Result()
 	if err == redis.Nil {
 		return nil, nil
+	}
+	if err != nil {
+		return nil, err
 	}
 	var wearherResp cache.WeatherResponse
 	if err := json.Unmarshal([]byte(resp), &wearherResp); err != nil {
@@ -44,12 +52,14 @@ func (s *redisCache) Get(ctx context.Context, key string) (*cache.WeatherRespons
 
 }
 
-func (s *redisCache) Set(ctx context.Context, key string, value *cache.WeatherResponse, ttl time.Duration) error {
+func (s *redisCache) Set(key string, value *cache.WeatherResponse, ttl time.Duration) error {
+	setCtx, cancel := context.WithTimeout(context.Background(), redisContextTime)
+	defer cancel()
 	v, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
-	err = s.client.Set(ctx, key, string(v), ttl).Err()
+	err = s.client.Set(setCtx, key, string(v), ttl).Err()
 	if err != nil {
 		return err
 	}

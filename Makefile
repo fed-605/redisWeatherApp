@@ -1,2 +1,2 @@
 run:
-	@go run cmd/server/main.go
+	@go run ./cmd/weather-app/main.go
